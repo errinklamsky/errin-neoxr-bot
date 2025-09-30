@@ -6,11 +6,6 @@
 > Starting from version **6.x**, [@neoxr/wb](https://www.npmjs.com/package/@neoxr/wb) has been migrated to **ECMA (ESM)** with major changes and a full refactor.  
 > To ensure compatibility, it is recommended to re-download the script.
 
-### Script Delay 🤣
-
-> [!NOTE]
-> Terkait laporan script delay, itu bukan delay tapi memang sistem anti spam (cooldown) jika ada 2 user mengirim command secara bersamaan hanya 1 yang akan di response untuk me-minimalisir banned dari pihak WhatsApp. Fitur ini bisa dimatikan dengan perintah : **.antispam off**
-
 ### Premium Script v5.1-Optima
 
 🏷️ Price : **Rp. 150.000 / $20.80**
@@ -29,12 +24,15 @@
 - Bot Hosting (Jadibot Auto Reconnect)
 - Mistery Box
 - Plugin Model (ESM)
+- 600+ Commands Available
 - High Optimation
 - Free Updates
 - Bonus ApiKey 100K Request (for 1 year)
 
 > [!NOTE]
 > Script Premium sudah terdapat semua additional features, kecuali payment gateway.
+
+Link Pembelian [Click](https://shop.neoxr.eu/product/TCnb)
 
 **Additional Features :**
 
