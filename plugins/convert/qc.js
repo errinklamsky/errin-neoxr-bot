@@ -16,9 +16,9 @@ export const run = {
          if (!text) return client.reply(m.chat, Utils.example(isPrefix, command, 'Hi!'), m)
          if (text.length > 30) return client.reply(m.chat, Utils.texted('bold', `🚩 Max 30 character.`), m)
          client.sendReact(m.chat, '🕒', m.key)
-         let pic = await client.profilePictureUrl(m.quoted ? m.quoted.sender : m.sender, 'image')
-         if (!pic) {
-            pic = 'https://i.ibb.co/nsDv3ZJ/image.jpg'
+         let avatar = await client.profilePicture(m.quoted ? m.quoted.sender : m.sender)
+         if (Buffer.isBuffer(avatar)) {
+            avatar = 'https://qu.ax/mnUAl.jpg'
          }
          const json = {
             "type": "quote",
@@ -34,7 +34,7 @@ export const run = {
                   "id": 1,
                   "name": m.quoted ? global.db.users.find(v => v.jid == m.quoted.sender).name : m.pushName,
                   "photo": {
-                     "url": pic
+                     "url": avatar
                   }
                },
                "text": text,

@@ -24,7 +24,7 @@ export const run = {
       } catch (e) { } finally {
          let target = global.db.users.find(v => v.jid == user)
          if (typeof target == 'undefined') return client.reply(m.chat, Utils.texted('bold', `🚩 Can't find user data.`), m)
-         var pic = await client.profilePictureUrl(user, 'image')
+         const avatar = await client.profilePicture(user)
          let blocked = blockList.includes(user) ? true : false
          let caption = `乂  *U S E R - P R O F I L E*\n\n`
          caption += `	◦  *Name* : ${target.name}\n`
@@ -40,7 +40,7 @@ export const run = {
          caption += global.footer
          client.sendMessageModify(m.chat, caption, m, {
             largeThumb: true,
-            thumbnail: pic ? await Utils.fetchAsBuffer(pic) : await Utils.fetchAsBuffer('./media/image/default.jpg')
+            thumbnail: avatar
          })
       }
    },

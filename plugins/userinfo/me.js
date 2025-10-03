@@ -9,7 +9,7 @@ export const run = {
    }) => {
       let user = global.db.users.find(v => v.jid == m.sender)
       let _own = [...new Set([Config.owner, ...global.db.setting.owners])]
-      var pic = await client.profilePictureUrl(m.sender, 'image')
+     const avatar = await client.profilePicture(m.sender)
       let blocked = blockList.includes(m.sender) ? true : false
       let now = new Date() * 1
       let lastseen = (user.lastseen == 0) ? 'Never' : Utils.toDate(now - user.lastseen)
@@ -28,7 +28,7 @@ export const run = {
       caption += global.footer
       client.sendMessageModify(m.chat, caption, m, {
          largeThumb: true,
-         thumbnail: pic ? await Utils.fetchAsBuffer(pic) : await Utils.fetchAsBuffer('./media/image/default.jpg')
+         thumbnail: avatar
       })
    },
    error: false

@@ -15,7 +15,7 @@ export const run = {
          const creator = (meta?.owner?.endsWith('lid') ? meta?.ownerJid : meta.owner)?.replace(/@.+/, '')
          const admin = client.getAdmin(meta.participants)
          const member = participants.map(u => u.id)
-         let pic = await client.profilePictureUrl(m.chat, 'image')
+         const picture = await client.profilePicture(m.chat)
          let caption = `乂  *G R O U P - I N F O*\n\n`
          caption += `	◦  *Name* : ${meta.subject}\n`
          caption += `	◦  *Member* : ${member.length}\n`
@@ -40,7 +40,7 @@ export const run = {
          caption += global.footer
          client.sendMessageModify(m.chat, caption, m, {
             largeThumb: true,
-            thumbnail: pic ? await Utils.fetchAsBuffer(pic) : await Utils.fetchAsBuffer('./media/image/default.jpg')
+            thumbnail: picture
          })
       } catch (e) {
          client.reply(m.chat, Utils.jsonFormat(e), m)

@@ -27,12 +27,7 @@ export const run = {
             const option = useOpt ? (args[1]).toLowerCase() : false
             const time = group.stay ? 'FOREVER' : (group.expired == 0 ? 'NOT SET' : Utils.timeReverse(group.expired - new Date() * 1))
             const member = groupMetadata.participants.map(u => u.id).length
-            let pic = await Utils.fetchAsBuffer('./media/image/default.jpg')
-            try {
-               pic = await client.profilePictureUrl(jid, 'image') || await Utils.fetchAsBuffer('./media/image/default.jpg')
-            } catch {
-               pic = await Utils.fetchAsBuffer('./media/image/default.jpg')
-            }
+            const picture = await client.profilePicture(jid)
             let data = {
                name: groupName,
                member,
@@ -42,7 +37,7 @@ export const run = {
             }
             if (!useOpt) return client.sendMessageModify(m.chat, steal(Utils, data) + '\n\n' + global.footer, m, {
                largeThumb: true,
-               thumbnail: await Utils.fetchAsBuffer(pic)
+               thumbnail: picture
             })
             if (option == 'open') {
                if (!admin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't open ${groupName} group link because the bot is not an admin.`), m)
