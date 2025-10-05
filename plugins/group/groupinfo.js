@@ -12,7 +12,7 @@ export const run = {
    }) => {
       try {
          const meta = await (await client.groupMetadata(m.chat))
-         const creator = (meta?.owner?.endsWith('lid') ? meta?.ownerJid : meta.owner)?.replace(/@.+/, '')
+         const creator = (meta?.owner?.endsWith('lid') ? (meta?.ownerJid ?? meta?.ownerPn) : meta.owner)?.replace(/@.+/, '')
          const admin = client.getAdmin(meta.participants)
          const member = participants.map(u => u.id)
          const picture = await client.profilePicture(m.chat)

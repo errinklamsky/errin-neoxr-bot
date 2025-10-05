@@ -33,6 +33,15 @@ export default async (client, ctx) => {
       const isAdmin = m.isGroup ? admins.includes(m.sender) : false
       const isBotAdmin = m.isGroup ? admins.includes((client.user.id.split`:`[0]) + '@s.whatsapp.net') : false
 
+      if (!users || typeof users.limit === undefined) return global.db.users.push({
+         jid: m.sender,
+         lid: m.sender?.endsWith('lid') ? m.sender : null,
+         banned: false,
+         limit: Config.limit,
+         hit: 0,
+         spam: 0
+      })
+
       const isSpam = spam.detection(client, m, {
          prefix, command, commands, users, cooldown,
          show: 'all', // options: 'all' | 'command-only' | 'message-only' | 'spam-only'| 'none'
@@ -50,14 +59,6 @@ export default async (client, ctx) => {
       if (m.isGroup && !isBotAdmin) {
          groupSet.localonly = false
       }
-      if (!users || typeof users.limit === undefined) return global.db.users.push({
-         jid: m.sender,
-         lid: m.sender?.endsWith('lid') ? m.sender : null,
-         banned: false,
-         limit: Config.limit,
-         hit: 0,
-         spam: 0
-      })
       if (!setting.multiprefix) setting.noprefix = false
       if (setting.debug && !m.fromMe && isOwner) client.reply(m.chat, Utils.jsonFormat(m), m)
 

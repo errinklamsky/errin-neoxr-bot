@@ -9,7 +9,7 @@ export const run = {
    }) => {
       let user = global.db.users.find(v => v.jid == m.sender)
       let _own = [...new Set([Config.owner, ...global.db.setting.owners])]
-     const avatar = await client.profilePicture(m.sender)
+      const avatar = await client.profilePicture(m.sender)
       let blocked = blockList.includes(m.sender) ? true : false
       let now = new Date() * 1
       let lastseen = (user.lastseen == 0) ? 'Never' : Utils.toDate(now - user.lastseen)

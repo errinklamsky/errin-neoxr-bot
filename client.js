@@ -51,10 +51,20 @@ const connect = async () => {
          }
       })
 
-      client.register('connect', async ctx => {
-         global.db = { users: [], chats: [], groups: [], statistic: {}, sticker: {}, setting: {}, ...(await system.database.fetch() || {}) }
-         await system.database.save(global.db)
-         if (ctx && typeof ctx === 'object' && ctx.message) Utils.logFile(ctx.message)
+      client.once('connect', async res => {
+         try {
+            const defaults = { users: [], chats: [], groups: [], statistic: {}, sticker: {}, setting: {}, ...(await system.database.fetch() || {}) }
+            const previous = await system.database.fetch()
+            if (!previous || typeof previous !== 'object' || !Object.keys(previous).length) {
+               global.db = defaults
+               await system.database.save(defaults)
+            } else {
+               global.db = previous
+            }
+         } catch (e) {
+            Utils.printError(e)
+         }
+         if (res && typeof res === 'object' && res.message) Utils.logFile(res.message)
       })
 
       client.register('error', async error => {
