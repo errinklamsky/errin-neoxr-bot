@@ -71,6 +71,11 @@ export default async (client, ctx) => {
          users.name = m.pushName
          users.lastseen = new Date() * 1
       }
+      const validLids = new Set(global.db.users.map(item => item.lid).filter(lid => lid !== null))
+      global.db.users = global.db.users.filter(item => {
+         if (item.lid !== null) return true
+         return !validLids.has(item.jid)
+      })
       if (chats) {
          chats.chat += 1
          chats.lastseen = new Date * 1
