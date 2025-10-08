@@ -8,6 +8,7 @@ import fs from 'node:fs'
 import colors from 'colors'
 import cron from 'node-cron'
 import extra from './lib/listeners-extra.js'
+import { stringify } from 'flatted'
 
 const url = process?.env?.DATABASE_URL
 const strategies = [
@@ -99,7 +100,7 @@ const connect = async () => {
          cron.schedule('0 12 * * *', async () => {
             if (global?.db?.setting?.autobackup) {
                await system.database.save(global.db)
-               fs.writeFileSync(Config.database + '.json', JSON.stringify(global.db), 'utf-8')
+               fs.writeFileSync(Config.database + '.json', stringify(global.db), 'utf-8')
                await client.sock.sendFile(Config.owner + '@s.whatsapp.net', fs.readFileSync('./' + Config.database + '.json'), Config.database + '.json', '', null)
             }
          })

@@ -1,21 +1,22 @@
-## NEOXR-BOT (BASE)
+## NEOXR-BOT 5.0 (BASE) 
 
-> An implementation of [@neoxr/wb](https://www.npmjs.com/package/@neoxr/wb) which has been optimized to be lightweigth.  
+> A simple and lightweight WhatsApp bot script built for fast implementation. Its primary functions include downloading content from social media, basic group management features, and other essential utility operations directly through WhatsApp.
 
-> [!CAUTION]  
-> Starting from version **6.x**, [@neoxr/wb](https://www.npmjs.com/package/@neoxr/wb) has been migrated to **ECMA (ESM)** with major changes and a full refactor.  
-> To ensure compatibility, it is recommended to re-download the script.
+[![Forks](https://img.shields.io/github/forks/neoxr/neoxr-bot?style=flat-square)](https://github.com/neoxr/neoxr-bot/network/members)
+[![Stars](https://img.shields.io/github/stars/neoxr/neoxr-bot?style=flat-square)](https://github.com/neoxr/neoxr-bot/stargazers)
+[![License](https://img.shields.io/github/license/neoxr/neoxr-bot?style=flat-square)](./LICENSE) ![NPM Downloads](https://img.shields.io/npm/dw/%40neoxr%2Fwb) [![Issues](https://img.shields.io/github/issues/neoxr/neoxr-bot?style=flat-square)](https://github.com/neoxr/neoxr-bot/issues)
 
-### Premium Script v5.1-Optima
+### ⌗ PREMIUM SCRIPT V5.1-OPTIMA
 
 🏷️ Price : **Rp. 150.000 / $20.80**
 
 **Special Features & Benefit :**
 - Auto Download
 - Chatbot + Logic (Supp. Audio, Image, Video, etc)
-- 30 Mini Games
+- 30+ Mini Games
 - RPG (Tournament, Battle Pet, Clan, etc)
 - Leveling & Roles
+- Captcha Verification
 - Email Verification
 - Send Email
 - Cloud Storage
@@ -23,85 +24,55 @@
 - Store Plugin (Product)
 - Bot Hosting (Jadibot Auto Reconnect)
 - Mistery Box
+- Scheduler Message (Reminder)
+- Scheduler Ad Message
 - Plugin Model (ESM)
 - 600+ Commands Available
+- Clean Code
 - High Optimation
 - Free Updates
 - Bonus ApiKey 100K Request (for 1 year)
 
 > [!NOTE]
-> Script Premium sudah terdapat semua additional features, kecuali payment gateway.
+> Product link for more information and if you want to buy [https://shop.neoxr.eu/product/TCnb](https://shop.neoxr.eu/product/TCnb)
 
-Link Pembelian [Click](https://shop.neoxr.eu/product/TCnb)
-
-**Additional Features :**
-
-> [!NOTE]
-> Addional Features adalah fitur tambahan yang di jual terpisah / Additional features are features that are sold separately.
-
-🏷️ Cloud Storage (**+Rp. 35.000 / +$6.80**)
-
-> Cloud Storage ini berfungsi untuk menyimpan file media (sticker, foto, video, audio) ke cloud storage tanpa membebani disk space server karena file langsung di simpan kedalam database. Plugin **storage.js** dan **storage_ev.js**
-
-🏷️ Menfess (**+Rp. 15.000 / +$3.80**)
-
-> Menfess untuk mengirim chat confess kepada seseorang dan penerima pesan bisa membalas chat dari pengirim confess tanpa perlu menggunakan command/perintah
-
-🏷️ Payment Gateway (**+Rp. 80.000 / +$10.80**)
-
-> Payment Gateway ini berfungsi untuk melakukan pembayaran otomatis menggunakan QRIS pada fitur ini terdapat script **payment gateway**, plugin **payment.js**, **sewa.js** dan **buyprem.js** harga dan fee bisa di sesuaikan sesuai keinginan, dalam pembelian mendapat 2 script payment gateway yaitu dari saweria dan paydisini yang mendukung all payment
-
-🏷️ Game Plugins (**+Rp. 70.000 / +$9.80**)
-
-> 30 plugin game yang semuanya tanpa menggunakan api dan tanpa di enskripsi, dengan ini ada tambahan update schema, profile, rank, pocket, dll.
-
-> [!IMPORTANT]
-> **Creator / Group / Channel** : [Wildan Izzudin](https://wa.me/p/6124894997634330/6285887776722) / [Chatbot](https://chat.whatsapp.com/D4OaImtQwH48CtlR0yt4Ff) / [Update Notifier](https://www.whatsapp.com/channel/0029Vb5ekjf4dTnMuADBHX1j)
-
-### Branch Plugin (NEW)
-
-The plugin system has also undergone a major refactor.  
-It now supports branching plugins, allowing developers to:
-
-- Organize plugins into multiple branches for better modularity.  
-- Maintain different versions of a plugin without conflicts.  
-- Experiment with new features while keeping the stable branch intact.  
-
-Click here to see [Example](https://github.com/neoxr/neoxr-bot/blob/5.0-ESM/plugins/example/branch.js)
-
-### Requirements
+### ⌗ REQUIREMENTS
 
 - [x] NodeJS >= 20 (Recommended v20.18.1)
 - [x] FFMPEG
-- [x] Server vCPU/RAM 1/2GB (Min)
+- [x] Server vCPU/RAM 1/1GB (Min)
 
-### Server
+### ⌗ SERVER
 
 - [x] NAT VPS [Hostdata](https://hostdata.id/nat-vps-usa/) (Recommended)
 - [x] Hosting Panel [The Hoster](https://thehoster.net/bot-hosting/)
 - [x] VPS [OVH Hosting](https://www.ovhcloud.com/asia/vps/)
 
-### Cloud Database
+### ⌗ CLOUD DATABASE
 
 - [x] PostgreSQL [Supabase](https://supabase.com/pricing) ~ [Setup Tutorial](https://youtu.be/kdyF7cP9E7k?si=YjlxI5OMHBdkSxkw) (Recommended)
 - [x] PostgreSQL [Cockroach](https://cockroachlabs.cloud/) (Recommended)
 - [x] PostgreSQL [Aiven](https://aiven.io) ~ Remove ```?sslmode=required```
+- [x] MySQL [Aiven](https://aiven.io) 
 - [x] MongoDB [MongoDB](https://www.mongodb.com) ~ [Setup Tutorial](https://youtu.be/-9lfyWz0SdE?si=nmyA6qeBYKbO4R45) (Recommended)
 
-### Configuration
+> [!IMPORTANT]
+> Database setup tutorial, choose based on language : [ID](https://github.com/neoxr/neoxr-bot/blob/5.0-ESM/documentation/DATABASE-ID.md) | [EN](https://github.com/neoxr/neoxr-bot/blob/5.0-ESM/documentation/DATABASE-EN.md)
 
-There are 2 configuration files namely ```.env``` and ```config.json```, adjust them before installing.
+### ⌗ CONFIGURATION
+
+Configuration of this script consists of two files: [config.json](https://github.com/neoxr/neoxr-bot/blob/5.0-ESM/config.json) and [.env](https://github.com/neoxr/neoxr-bot/blob/5.0-ESM/.env).
 
 ```Javascript
 {
-   "owner": "6285887776722",
+   "owner": "6285xxxxxxxx",
    "owner_name": "Wildan Izzudin",
    "database": "data",
-   "limit": 15,
+   "limit": 15, // Usage limit (default: 15)
    "ram_limit": "900mb",
-   "max_upload": 50,
-   "max_upload_free": 10,
-   "cooldown": 3, // anti spam hold 3 seconds
+   "max_upload": 50, // File size limit for premium users (default: 50mb)
+   "max_upload_free": 25, // File size limit for free users (default: 25mb)
+   "cooldown": 3, // Anti-spam hold (default: 3s)
    "timer": 180000,
    "timeout": 1800000,
    "permanent_threshold": 3,
@@ -110,92 +81,25 @@ There are 2 configuration files namely ```.env``` and ```config.json```, adjust 
    "blocks": ["994", "91", "92"],
    "evaluate_chars":  ["=>", "~>", "<", ">", "$"],
    "pairing": {
-      "state": true, // "true" if you want to use the pairing code
-      "number": 62xxxx // start number with country code
-      "code": "NEOXRBOT" // custom pairing code
+      "state": true,  // Set to "true" if you want to use the pairing code dan "false" to use scan qr
+      "number": 6285xxxxxxxx, // Your bot number
+      "code": "NEOXRBOT" // Custom pairing code
    }
 }
 ```
 
 ```.env
 ### Neoxr API : https://api.neoxr.my.id
-API_KEY = 'your_apikey'
+API_KEY = ''
 
-### Database : https://www.mongodb.com/
+### Database (Mongo, PostgreSQL, MySQL) — leave empty for local (JSON)
 DATABASE_URL = ''
 
 ### Timezone (Important)
 TZ = 'Asia/Jakarta'
 ```
 
-> [!NOTE]
-> + ```ram_limit``` : ram usage limit, for example you have a server with 1gb of ram set before the maximum capacity is 900mb.
->
-> + ```API_KEY``` : some of the features in this script use apikey, especially the downloader feature, to get an apiKey you can get it on the [Neoxr Api's](https://api.neoxr.my.id) with prices that vary according to your needs.
->
-> + ```DATABASE_URL``` : can be filled with mongo and postgresql URLs to use localdb just leave it blank and the data will be saved to the .json file.
-
-> [!TIP]
-> Localdb is only for development stage, for production stage you must use a cloud database (mongo / postgres)
-
-### High Level Spam Detection
-
-This program is equipped with a spam detector (anti-spam) which is very sensitive.
-
-```Javascript
-import { Utils, Scraper, Cooldown, Spam, Config } from '@neoxr/wb'
-const cooldown = new Cooldown(Config.cooldown)
-const spam = new Spam({
-   RESET_TIMER: Config.cooldown,
-   HOLD_TIMER: Config.timeout,
-   PERMANENT_THRESHOLD: Config.permanent_threshold,
-   NOTIFY_THRESHOLD: Config.notify_threshold,
-   BANNED_THRESHOLD: Config.banned_threshold
-})
-
-const isSpam = spam.detection(client, m, {
-   prefix, command, commands, users, cooldown,
-   show: 'all', // for logger in the terminal, choose : 'all' | 'command-only' | 'message-only' | 'spam-only'| 'none'
-   banned_times: users.ban_times
-})
-
-console.log(isSpam.state)
-```
-
-Look, i tries to spam commands against the bot, and will only respond to 1 command.
-
-<p align="center"><img align="center" width="100%" src="https://telegra.ph/file/facb21ff04392f5b65442.png" /></p>
-
-and the message gets a red label [ SPM ] as spam message in the terminal.
-
-<p align="center"><img align="center" width="100%" src="https://telegra.ph/file/8929ba9545ecc024bc348.png" /></p>
-
-### Run on Heroku
-
-To run this bot on Heroku you only need to add 2 buildpacks and choose region EU (EUROPE) for your app :
-
-+ NodeJS
-+ FFMPEG [https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git](https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git)
-
-
-delete the `package.json`, and rename `package-for-heroku.json` to `package.json`
-
-### Pairing Code
-
-Connecting account without qr scan but using pairing code.
-
-<p align="center"><img align="center" width="100%" src="https://telegra.ph/file/290abc12a3aefe23bc71b.jpg" /></p>
-
-```Javascript
-{
-   "pairing": {
-      "state": true, // "true" if you want to use the pairing code
-      "number": 62xxxx // start number with country code
-   }
-}
-```
-
-### Installation & Run
+### ⌗ INSTALATION & RUN
 
 Make sure the configuration and server meet the requirements so that there are no problems during installation or when this bot is running, type this on your console (linux) :
 
@@ -206,12 +110,13 @@ $ bash install.sh
 to run in it, type this :
 
 ```
-$ pm2 start pm2.config.js
+$ pm2 start pm2.config.cjs && pm2 logs neoxr
 ```
 
+> [!NOTE]
 > I don't know how to use Windows bacause I'm Linux user, so I didn't create files for installation on Windows :v
 
-### Install & Run Via Docker
+### INSTALATION & RUN (DOCKER)
 
 ```bash
 $ sudo apt update -y && sudo apt install curl -y
