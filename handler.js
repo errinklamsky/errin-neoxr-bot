@@ -127,9 +127,9 @@ export default async (client, ctx) => {
             Utils.hitstat(command, m.sender)
          }
          const is_commands = Object.fromEntries(Object.entries(plugins).filter(([name, prop]) => prop.run.usage))
-         for (let pluginPath in is_commands) {
+         for (const [pluginPath, pluginData] of Object.entries(is_commands)) {
             const name = path.basename(pluginPath, '.js')
-            const cmd = is_commands[pluginPath].run
+            const cmd = pluginData.run
             const turn = cmd.usage instanceof Array ? cmd.usage.includes(command) : cmd.usage instanceof String ? cmd.usage == command : false
             const turn_hidden = cmd.hidden instanceof Array ? cmd.hidden.includes(command) : cmd.hidden instanceof String ? cmd.hidden == command : false
             if (!turn && !turn_hidden) continue
@@ -198,9 +198,9 @@ export default async (client, ctx) => {
          }
       } else {
          const is_events = Object.fromEntries(Object.entries(plugins).filter(([name, prop]) => !prop.run.usage))
-         for (let pluginPath in is_events) {
+         for (const [pluginPath, pluginData] of Object.entries(is_events)) {
             const name = path.basename(pluginPath, '.js')
-            const event = is_events[pluginPath].run
+            const event = pluginData.run
             if ((m.fromMe && m.isBot) || m.chat.endsWith('broadcast') || /pollUpdate/.test(m.mtype)) continue
             if (!m.isGroup && Config.blocks.some(no => m.sender.startsWith(no))) return client.updateBlockStatus(m.sender, 'block')
             if (setting.self && !['menfess_ev', 'anti_link', 'anti_tagall', 'anti_virtex', 'filter'].includes(event.pluginName) && !isOwner && !m.fromMe) continue
