@@ -1,17 +1,54 @@
 import 'dotenv/config'
 import 'rootpath'
 import { spawn } from 'child_process'
+import fs from 'fs/promises'
 import path from 'path'
 import CFonts from 'cfonts'
 import { fileURLToPath } from 'url'
+import { Utils } from '@neoxr/wb'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-console.clear()
+const TEMP_DIR = path.resolve('./temp')
+
+const ensureTempDir = async () => {
+   try {
+      await fs.mkdir(TEMP_DIR, { recursive: true })
+   } catch (e) {
+      Utils.printError('Failed to ensure temp directory: ' + e)
+   }
+}
+
+const cleanTemp = async () => {
+   try {
+      const files = await fs.readdir(TEMP_DIR)
+
+      await Promise.all(
+         files.map(async file => {
+            if (file.endsWith('.file')) return
+
+            const filePath = path.join(TEMP_DIR, file)
+            try {
+               const stats = await fs.stat(filePath)
+               if (stats.isFile()) await fs.unlink(filePath)
+            } catch {
+               Utils.printWarning(`Skip failed file: ${file}`)
+            }
+         })
+      )
+   } catch (e) {
+      Utils.printError('Error reading temp directory: ' + e)
+   }
+}
+
+const startAutoClean = async () => {
+   await ensureTempDir()
+   await cleanTemp()
+   setInterval(cleanTemp, 60 * 60 * 1000) // 1 hours
+}
 
 let p = null
-
 function start() {
    const args = [path.join(__dirname, 'client.js'), ...process.argv.slice(2)]
    p = spawn(process.argv[0], args, {
@@ -30,6 +67,7 @@ function start() {
       })
 }
 
+console.clear()
 const major = parseInt(process.versions.node.split('.')[0], 10)
 if (major < 20) {
    console.error(
@@ -50,4 +88,5 @@ CFonts.say('Github : https://github.com/neoxr/neoxr-bot', {
    font: 'console',
    align: 'center'
 })
-start()
+
+start(), startAutoClean()

@@ -13,20 +13,40 @@ export const run = {
       setting,
       Utils
    }) => {
-      let pluginDisable = setting.pluginDisable
-      if (!args || !args[0]) return client.reply(m.chat, Utils.example(isPrefix, command, 'tiktok'), m)
-      if (command == 'plugdis') {
-         let plugins = Object.keys(ctx.plugins).map(dir => path.basename(dir, '.js'))
-         if (!plugins.includes(args[0])) return client.reply(m.chat, Utils.texted('bold', `🚩 Plugin ${args[0]}.js not found.`), m)
-         if (pluginDisable.includes(args[0])) return client.reply(m.chat, Utils.texted('bold', `🚩 Plugin ${args[0]}.js previously has been disabled.`), m)
-         pluginDisable.push(args[0])
-         client.reply(m.chat, Utils.texted('bold', `🚩 Plugin ${args[0]}.js successfully disabled.`), m)
-      } else if (command == 'plugen') {
-         if (!pluginDisable.includes(args[0])) return client.reply(m.chat, Utils.texted('bold', `🚩 Plugin ${args[0]}.js not found.`), m)
-         pluginDisable.forEach((data, index) => {
-            if (data === args[0]) pluginDisable.splice(index, 1)
-         })
-         client.reply(m.chat, Utils.texted('bold', `🚩 Plugin ${args[0]}.js successfully enable.`), m)
+      const [pluginName] = args
+      if (!pluginName) return client.reply(m.chat, Utils.example(isPrefix, command, 'tiktok'), m)
+
+      let plugins = Object.keys(ctx.plugins).map(dir => path.basename(dir, '.js'))
+
+      const regex = new RegExp(pluginName, 'i')
+
+      if (command === 'plugdis') {
+         const matched = plugins.filter(p => regex.test(p))
+
+         if (matched.length === 0) return client.reply(m.chat, Utils.texted('bold', `🚩 Plugin ${pluginName}.js not found.`), m)
+
+         let disabledCount = 0
+         for (const name of matched) {
+            if (!setting.pluginDisable.includes(name)) {
+               setting.pluginDisable.push(name)
+               disabledCount++
+            }
+         }
+
+         if (disabledCount === 0) return client.reply(m.chat, Utils.texted('bold', `🚩 All matched plugins are already disabled.`), m)
+
+         client.reply(m.chat, Utils.texted('bold', `🚩 ${disabledCount} plugin(s) successfully disabled.`), m)
+      } else if (command === 'plugen') {
+         const before = setting.pluginDisable.length
+
+         setting.pluginDisable = setting.pluginDisable.filter(p => !regex.test(p))
+
+         const after = setting.pluginDisable.length
+         const enabledCount = before - after
+
+         if (enabledCount === 0) return client.reply(m.chat, Utils.texted('bold', `🚩 No matching plugin found in disabled list.`), m)
+
+         client.reply(m.chat, Utils.texted('bold', `🚩 ${enabledCount} plugin(s) successfully enabled.`), m)
       }
    },
    owner: true

@@ -11,96 +11,93 @@ export const run = {
       Utils
    }) => {
       try {
-         let users = global.db.users.length
-         let chats = global.db.chats.filter(v => v.jid && v.jid.endsWith('.net')).length
-         let groupList = async () => Object.entries(await client.groupFetchAllParticipating()).slice(0).map(entry => entry[1])
-         let groups = await (await groupList()).map(v => v.id).length
-         let banned = global.db.users.filter(v => v.banned).length
-         let premium = global.db.users.filter(v => v.premium).length
+         const db = global.db
+         const users = db.users.length
+         const chats = db.chats.filter(v => v.jid?.endsWith('.net')).length
+         const groups = Object.keys(await client.groupFetchAllParticipating()).length
+
+         const banned = db.users.filter(v => v.banned).length
+         const premium = db.users.filter(v => v.premium).length
+
          class Hit extends Array {
             total(key) {
-               return this.reduce((a, b) => a + (b[key] || 0), 0)
+               return this.reduce((sum, item) => sum + (item[key] || 0), 0)
             }
          }
-         let sum = new Hit(...Object.values(global.db.statistic))
-         let hitstat = sum.total('hitstat') != 0 ? sum.total('hitstat') : 0
-         const stats = {
-            users,
-            chats,
-            groups,
-            banned,
-            blocked: blockList.length,
-            premium,
-            hitstat,
-            uptime: Utils.toTime(process.uptime() * 1000)
-         }
-         const system = global.db.setting
-         client.sendMessageModify(m.chat, statistic(Utils, stats, system), m, {
+
+         const hitData = new Hit(...Object.values(db.statistic))
+         const hitstat = hitData.total('hitstat') || 0
+         const stats = { users, chats, groups, banned, blocked: blockList.length, premium, hitstat, temp: await Utils.getFolderSize(`${process.cwd()}/temp`), uptime: Utils.toTime(process.uptime() * 1000) }
+         const system = db.setting
+
+         await client.sendMessageModify(m.chat, buildStatisticMessage(Utils, stats, system), m, {
             largeThumb: true,
             thumbnail: Utils.isUrl(setting.cover) ? setting.cover : Buffer.from(setting.cover, 'base64')
          })
-      } catch (e) {
-         client.reply(m.chat, Utils.jsonFormat(e), m)
+      } catch (error) {
+         client.reply(m.chat, Utils.jsonFormat(error), m)
       }
    },
-   error: false,
-
+   error: false
 }
 
-const statistic = (Utils, stats, system) => {
-   if (global.db.setting.style == 2) {
-      return ` –  *B O T S T A T*
+const buildStatisticMessage = (Utils, stats, system) => {
+   const formatCheck = val => Utils.texted('bold', val ? '[ √ ]' : '[ × ]')
+   const formatNum = num => Utils.texted('bold', Utils.formatNumber(num))
+   const formatSize = size => Utils.texted('bold', Utils.formatSize(size))
+   const bold = text => Utils.texted('bold', text)
 
-┌  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.groups))} Groups Joined
-│  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.chats))} Personal Chats
-│  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.users))} Users In Database
-│  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.banned))} Users Banned
-│  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.blocked))} Users Blocked
-│  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.premium))} Premium Users
-│  ◦  ${Utils.texted('bold', Utils.formatNumber(stats.hitstat))} Commands Hit
-└  ◦  Runtime : ${Utils.texted('bold', stats.uptime)}
+   const prefixText = system.multiprefix
+      ? `( ${system.prefix.join(' ')} )`
+      : `( ${system.onlyprefix} )`
 
- –  *S Y S T E M*
+   const resetAt = format(Date.now(), 'dd/MM/yy HH:mm')
 
-┌  ◦  ${Utils.texted('bold', system.autobackup ? '[ √ ]' : '[ × ]')}  Auto Backup
-│  ◦  ${Utils.texted('bold', system.autodownload ? '[ √ ]' : '[ × ]')}  Auto Download
-│  ◦  ${Utils.texted('bold', system.antispam ? '[ √ ]' : '[ × ]')}  Anti Spam
-│  ◦  ${Utils.texted('bold', system.debug ? '[ √ ]' : '[ × ]')}  Debug Mode
-│  ◦  ${Utils.texted('bold', system.groupmode ? '[ √ ]' : '[ × ]')}  Group Mode
-│  ◦  ${Utils.texted('bold', system.online ? '[ √ ]' : '[ × ]')}  Always Online
-│  ◦  ${Utils.texted('bold', system.notifier ? '[ √ ]' : '[ × ]')}  Expiry Notification
-│  ◦  ${Utils.texted('bold', system.self ? '[ √ ]' : '[ × ]')}  Self Mode
-│  ◦  ${Utils.texted('bold', system.noprefix ? '[ √ ]' : '[ × ]')}  No Prefix
-│  ◦  Prefix : ${Utils.texted('bold', system.multiprefix ? '( ' + system.prefix.map(v => v).join(' ') + ' )' : '( ' + system.onlyprefix + ' )')}
-└  ◦  Reset At : ${format(Date.now(), 'dd/MM/yy HH:mm')}
+   // ────── BOT STATS ──────
+   let botStats = ''
+   botStats += `${formatNum(stats.groups)} Groups Joined\n`
+   botStats += `${formatNum(stats.chats)} Personal Chats\n`
+   botStats += `${formatNum(stats.users)} Users In Database\n`
+   botStats += `${formatNum(stats.banned)} Users Banned\n`
+   botStats += `${formatNum(stats.blocked)} Users Blocked\n`
+   botStats += `${formatNum(stats.premium)} Premium Users\n`
+   botStats += `${formatNum(stats.hitstat)} Commands Hit\n`
+   botStats += `${formatSize(stats.temp)} ./temp Folder`
+   if (system.style !== 2) botStats += `\nRuntime : ${bold(stats.uptime)}`
 
-${global.footer}`
-   } else {
-      return `乂  *B O T S T A T*
+   // ────── SYSTEM STATS ──────
+   let systemStats = ''
+   systemStats += `${formatCheck(system.autobackup)}  Auto Backup\n`
+   systemStats += `${formatCheck(system.autodownload)}  Auto Download\n`
+   systemStats += `${formatCheck(system.antispam)}  Anti Spam\n`
+   systemStats += `${formatCheck(system.debug)}  Debug Mode\n`
+   systemStats += `${formatCheck(system.groupmode)}  Group Mode\n`
+   systemStats += `${formatCheck(system.online)}  Always Online\n`
+   systemStats += `${formatCheck(system.notifier)}  Expiry Notification\n`
+   systemStats += `${formatCheck(system.self)}  Self Mode\n`
+   systemStats += `${formatCheck(system.noprefix)}  No Prefix\n`
+   systemStats += `Prefix : ${bold(prefixText)}`
+   if (system.style !== 2) systemStats += `\nReset At : ${resetAt}`
 
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.groups))} Groups Joined
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.chats))} Personal Chats
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.users))} Users In Database
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.banned))} Users Banned
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.blocked))} Users Blocked
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.premium))} Premium Users
-	◦  ${Utils.texted('bold', Utils.formatNumber(stats.hitstat))} Commands Hit
-	◦  Runtime : ${Utils.texted('bold', stats.uptime)}
-
-乂  *S Y S T E M*
-
-	◦  ${Utils.texted('bold', system.autobackup ? '[ √ ]' : '[ × ]')}  Auto Backup
-	◦  ${Utils.texted('bold', system.autodownload ? '[ √ ]' : '[ × ]')}  Auto Download
-	◦  ${Utils.texted('bold', system.antispam ? '[ √ ]' : '[ × ]')}  Anti Spam
-	◦  ${Utils.texted('bold', system.debug ? '[ √ ]' : '[ × ]')}  Debug Mode
-	◦  ${Utils.texted('bold', system.groupmode ? '[ √ ]' : '[ × ]')}  Group Mode
-	◦  ${Utils.texted('bold', system.online ? '[ √ ]' : '[ × ]')}  Always Online
-   ◦  ${Utils.texted('bold', system.notifier ? '[ √ ]' : '[ × ]')}  Expiry Notification
-	◦  ${Utils.texted('bold', system.self ? '[ √ ]' : '[ × ]')}  Self Mode
-	◦  ${Utils.texted('bold', system.noprefix ? '[ √ ]' : '[ × ]')}  No Prefix
-	◦  Prefix : ${Utils.texted('bold', system.multiprefix ? '( ' + system.prefix.map(v => v).join(' ') + ' )' : '( ' + system.onlyprefix + ' )')}
-	◦  Reset At : ${format(Date.now(), 'dd/MM/yy HH:mm')}
-
-${global.footer}`
+   // ────── STYLE 2 (Frame Boxed) ──────
+   if (system.style === 2) {
+      let result = ''
+      result += `–  *B O T S T A T*\n\n`
+      result += `┌  ◦  ${botStats.replace(/\n/g, '\n│  ◦  ')}\n`
+      result += `└  ◦  Runtime : ${bold(stats.uptime)}\n\n`
+      result += `–  *S Y S T E M*\n\n`
+      result += `┌  ◦  ${systemStats.replace(/\n/g, '\n│  ◦  ')}\n`
+      result += `└  ◦  Reset At : ${resetAt}\n\n`
+      result += `${global.footer}`
+      return result.trim()
    }
-}
+
+   // ────── DEFAULT STYLE (Simpler layout) ──────
+   let result = ''
+   result += `乂  *B O T S T A T*\n\n`
+   result += `\t◦  ${botStats.replace(/\n/g, '\n\t◦  ')}\n\n`
+   result += `乂  *S Y S T E M*\n\n`
+   result += `\t◦  ${systemStats.replace(/\n/g, '\n\t◦  ')}\n\n`
+   result += `${global.footer}`
+   return result.trim()
+} 

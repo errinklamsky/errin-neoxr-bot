@@ -82,17 +82,6 @@ const connect = async () => {
             }
          }, 60 * 1000)
 
-         if (!fs.existsSync('./temp')) fs.mkdirSync('./temp')
-
-         setInterval(async () => {
-            try {
-               const tmpFiles = fs.readdirSync('./temp')
-               if (tmpFiles.length > 0) {
-                  tmpFiles.filter(v => !v.endsWith('.file')).map(v => fs.unlinkSync('./temp/' + v))
-               }
-            } catch { }
-         }, 60 * 1000 * 10)
-
          setInterval(async () => {
             if (global.db) await system.database.save(global.db)
          }, 60 * 1000 * (['local', 'sqlite'].includes(system.session) ? 3 : 5))
