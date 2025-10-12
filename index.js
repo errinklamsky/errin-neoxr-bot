@@ -44,7 +44,7 @@ const cleanTemp = async () => {
 
 const startAutoClean = async () => {
    await ensureTempDir()
-   await cleanTemp()
+   cleanTemp()
    setInterval(cleanTemp, 60 * 60 * 1000) // 1 hours
 }
 
@@ -89,4 +89,5 @@ CFonts.say('Github : https://github.com/neoxr/neoxr-bot', {
    align: 'center'
 })
 
-start(), startAutoClean()
+start()
+startAutoClean()
