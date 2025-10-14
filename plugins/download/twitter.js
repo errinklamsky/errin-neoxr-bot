@@ -12,7 +12,7 @@ export const run = {
    }) => {
       try {
          if (!args || !args[0]) return client.reply(m.chat, Utils.example(isPrefix, command, 'https://twitter.com/mosidik/status/1475812845249957889?s=20'), m)
-         if (!args[0].match(/(twitter.com)/gi)) return client.reply(m.chat, global.status.invalid, m)
+         if (!args[0].match(/(x.com)/gi)) return client.reply(m.chat, global.status.invalid, m)
          client.sendReact(m.chat, '🕒', m.key)
          const json = await Api.neoxr('/twitter', {
             url: args[0]
@@ -35,4 +35,5 @@ export const run = {
    },
    error: false,
    limit: true
+
 }
