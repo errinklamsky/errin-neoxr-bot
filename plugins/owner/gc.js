@@ -9,85 +9,146 @@ export const run = {
       Utils
    }) => {
       try {
-         let groups = global.db.groups
-         if (m.quoted && (m.quoted?.text)?.match(/gcopt/g) && (m.quoted.sender == client.decodeJid(client.user.id) || m.quoted.sender == client.decodeJid(client.user.lid))) {
-            if (!args || !args[0]) return m.reply(Utils.texted('bold', `🚩 Give the group number argument in order.`))
-            if (isNaN(args[0])) return m.reply(Utils.texted('bold', `🚩 This argument must be a number.`))
-            const jids = (m.quoted.text).split('💳* :').length
-            if (args[0] > (jids - 1) || args[0] < 1) return m.reply(Utils.texted('bold', `🚩 An error occurred, please check the group data list again.`))
-            const select = (args[0]).trim()
-            const jid = ((m.quoted.text).split('💳* :')[select].split`\n`[0] + '@g.us').trim()
-            const group = groups.find(v => v.jid == jid)
-            if (!group) return m.reply(Utils.texted('bold', `🚩 Data group does not exist in the database.`))
-            const groupMetadata = await (await client.groupMetadata(jid))
-            const groupName = groupMetadata ? groupMetadata.subject : ''
-            const adminList = client.getAdmin(client.lidParser(groupMetadata.participants))
-            const admin = adminList.includes(client.decodeJid(client.user.id))
-            const useOpt = (args && args[1]) ? true : false
-            const option = useOpt ? (args[1]).toLowerCase() : false
-            const time = group.stay ? 'FOREVER' : (group.expired == 0 ? 'NOT SET' : Utils.timeReverse(group.expired - new Date() * 1))
-            const member = groupMetadata.participants.map(u => u.id).length
-            const picture = await client.profilePicture(jid)
-            let data = {
-               name: groupName,
-               member,
-               time,
-               group,
-               admin
+         client.groupsJid = client.groupsJid || []
+         const areArraysEqual = (a, b) => a.length === b.length && JSON.stringify([...a].sort()) === JSON.stringify([...b].sort())
+         const fetchedGroups = Object.values(await client.groupFetchAllParticipating()).map(v => v.id)
+         if (fetchedGroups.length > 0 && !areArraysEqual(fetchedGroups, client.groupsJid)) {
+            client.groupsJid = fetchedGroups
+         }
+
+         const [no, option, ...text] = args
+         if (!no || isNaN(no)) return client.reply(m.chat, explain(isPrefix, command), m)
+         let group = global.db.groups?.find(v => v.jid === client.groupsJid[no - 1])
+         if (!group) return client.reply(m.chat, Utils.texted('bold', `🚩 Group not found.`), m)
+
+         const { id, subject, participants } = await client.resolveGroupMetadata(group.jid)
+         const picture = await client.profilePicture(id)
+         const admins = client.getAdmin(client.lidParser(participants))
+         const isBotAdmin = admins.includes(client.decodeJid(client.user.id))
+
+         switch (true) {
+            case option?.includes('-'): {
+               const texts = text?.join(' ')
+               const color = `#${Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0').toUpperCase()}`
+               const q = m.quoted ? m.quoted : m
+               const mime = (q.msg || q).mimetype || ''
+               if (/video|image\/(jpe?g|png)/.test(mime)) {
+                  await client.sendReact(m.chat, '🕒', m.key)
+                  const media = await m.quoted.download()
+                  client.groupStatus(id, {
+                     media,
+                     caption: texts || q.text || ''
+                  }).then(async () => {
+                     await client.sendReact(m.chat, '✅', m.key)
+                  })
+               } else if (/audio/.test(mime)) {
+                  await client.sendReact(m.chat, '🕒', m.key)
+                  const media = await m.quoted.download()
+                  client.groupStatus(id, {
+                     media,
+                     background: color
+                  }).then(async () => {
+                     await client.sendReact(m.chat, '✅', m.key)
+                  })
+               } else {
+                  if (!texts) return client.reply(m.chat, Utils.texted('bold', `🚩 Text is required!`), m)
+                  await client.sendReact(m.chat, '🕒', m.key)
+                  client.groupStatus(id, {
+                     text: texts,
+                     background: color
+                  }).then(async () => {
+                     await client.sendReact(m.chat, '✅', m.key)
+                  })
+               }
+               break
             }
-            if (!useOpt) return client.sendMessageModify(m.chat, steal(Utils, data) + '\n\n' + global.footer, m, {
-               largeThumb: true,
-               thumbnail: picture
-            })
-            if (option == 'open') {
-               if (!admin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't open ${groupName} group link because the bot is not an admin.`), m)
-               client.groupSettingUpdate(jid, 'not_announcement').then(() => {
-                  client.reply(jid, Utils.texted('bold', `🚩 Group has been opened.`)).then(() => {
-                     client.reply(m.chat, Utils.texted('bold', `🚩 Successfully open ${groupName} group.`), m)
+
+            case option === 'open': {
+               if (!isBotAdmin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't open ${subject} group link because the bot is not an admin.`), m)
+               client.groupSettingUpdate(id, 'not_announcement').then(() => {
+                  client.reply(id, Utils.texted('bold', `🚩 Group has been opened.`)).then(() => {
+                     client.reply(m.chat, Utils.texted('bold', `🚩 Successfully open ${subject} group.`), m)
                   })
                })
-            } else if (option == 'close') {
-               if (!admin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't close ${groupName} group link because the bot is not an admin.`), m)
-               client.groupSettingUpdate(jid, 'announcement').then(() => {
-                  client.reply(jid, Utils.texted('bold', `🚩 Group has been closed.`)).then(() => {
-                     client.reply(m.chat, Utils.texted('bold', `🚩 Successfully close ${groupName} group.`), m)
+               break
+            }
+
+            case option === 'close': {
+               if (!isBotAdmin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't close ${subject} group link because the bot is not an admin.`), m)
+               client.groupSettingUpdate(id, 'announcement').then(() => {
+                  client.reply(id, Utils.texted('bold', `🚩 Group has been closed.`)).then(() => {
+                     client.reply(m.chat, Utils.texted('bold', `🚩 Successfully close ${subject} group.`), m)
                   })
                })
-            } else if (option == 'mute') {
+               break
+            }
+
+            case option === 'mute': {
                group.mute = true
-               client.reply(m.chat, Utils.texted('bold', `🚩 Bot successfully muted in ${groupName} group.`), m)
-            } else if (option == 'unmute') {
+               client.reply(m.chat, Utils.texted('bold', `🚩 Bot successfully muted in ${subject} group.`), m)
+               break
+            }
+
+            case option === 'unmute': {
                group.mute = false
-               client.reply(m.chat, Utils.texted('bold', `🚩 Bot successfully unmuted in ${groupName} group.`), m)
-            } else if (option == 'link') {
-               if (!admin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't get ${groupName} group link because the bot is not an admin.`), m)
-               client.reply(m.chat, 'https://chat.whatsapp.com/' + (await client.groupInviteCode(jid)), m)
-            } else if (option == 'leave') {
-               client.reply(jid, `🚩 Good Bye! (${setting.link})`, null, {
-                  mentions: groupMetadata.participants.map(v => v.id)
-               }).then(() => {
-                  client.groupLeave(jid).then(() => {
-                     groups.find(v => v.jid == jid).expired = 0
-                     groups.find(v => v.jid == jid).stay = false
-                     return client.reply(m.chat, Utils.texted('bold', `🚩 Successfully leave from ${groupName} group.`), m)
+               client.reply(m.chat, Utils.texted('bold', `🚩 Bot successfully unmuted in ${subject} group.`), m)
+               break
+            }
+
+            case option === 'link': {
+               if (!isBotAdmin) return client.reply(m.chat, Utils.texted('bold', `🚩 Can't get ${subject} group link because the bot is not an admin.`), m)
+               client.reply(m.chat, 'https://chat.whatsapp.com/' + (await client.groupInviteCode(id)), m)
+               break
+            }
+
+            case option === 'leave': {
+               client.reply(id, `🚩 Good Bye! (${setting.link})`, null, {
+                  mentions: participants.map(v => v.id)
+               }).then(async () => {
+                  await client.groupLeave(id).then(() => {
+                     Utils.removeItem(global.db.groups, group)
+                     return client.reply(m.chat, Utils.texted('bold', `🚩 Successfully leave from ${subject} group.`), m)
                   })
                })
-            } else if (option == 'reset') {
-               groups.find(v => v.jid == jid).expired = 0
-               groups.find(v => v.jid == jid).stay = false
-               client.reply(m.chat, Utils.texted('bold', `🚩 Configuration of bot in the ${groupName} group has been successfully reseted to default.`), m)
-            } else if (option == 'forever') {
+               break
+            }
+
+            case option === 'reset': {
+               group.expired = 0
+               group.stay = false
+               client.reply(m.chat, Utils.texted('bold', `🚩 Configuration of bot in the ${subject} group has been successfully reseted to default.`), m)
+               break
+            }
+
+            case option === 'forever': {
                group.expired = 0
                group.stay = true
-               client.reply(m.chat, Utils.texted('bold', `🚩 Successfully set bot to stay forever in ${groupName} group.`), m)
-            } else if (option.endsWith('d')) {
-               let now = new Date() * 1
-               let day = 86400000 * parseInt(option.replace('d', ''))
+               client.reply(m.chat, Utils.texted('bold', `🚩 Successfully set bot to stay forever in ${subject} group.`), m)
+               break
+            }
+
+            case option?.endsWith('d'): {
+               const now = new Date() * 1
+               const day = 86400000 * parseInt(option.replace('d', ''))
                group.expired += (group.expired == 0) ? (now + day) : day
                group.stay = false
-               client.reply(m.chat, Utils.texted('bold', `🚩 Bot duration is successfully set to stay for ${option.replace('d', ' days')} in ${groupName} group.`), m)
-            } else return m.reply(explain(isPrefix, command))
-         } else return m.reply(explain(isPrefix, command))
+               client.reply(m.chat, Utils.texted('bold', `🚩 Bot duration is successfully set to stay for ${option.replace('d', ' days')} in ${subject} group.`), m)
+               break
+            }
+
+            default: {
+               client.sendMessageModify(m.chat, steal(Utils, {
+                  name: subject,
+                  member: participants.length,
+                  time: group.stay ? 'FOREVER' : (group.expired == 0 ? 'NOT SET' : Utils.timeReverse(group.expired - new Date() * 1)),
+                  admin: isBotAdmin,
+                  group
+               }) + '\n\n' + global.footer, m, {
+                  largeThumb: true,
+                  thumbnail: picture
+               })
+            }
+         }
       } catch (e) {
          console.log(e)
          m.reply(Utils.jsonFormat(e))
@@ -139,6 +200,10 @@ const explain = (prefix, cmd) => {
 *10.* ${prefix + cmd} <no> 30d
 - to set the duration of the bot in the group
 Example : ${prefix + cmd} 2 1d
+
+*11.* ${prefix + cmd} <no> - text or reply media (video, image, audio)
+- to create a group status / story
+Example : ${prefix + cmd} 2 - Hello World!
 
 *NB* : Make sure you reply to messages containing group list to use this moderation options, send _${prefix}groups_ to show all group list.`
 }
