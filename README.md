@@ -27,14 +27,14 @@
 - Scheduler Message (Reminder)
 - Scheduler Ad Message
 - Plugin Model (ESM)
-- 600+ Commands Available
+- 700+ Commands Available
 - Clean Code
 - High Optimation
 - Free Updates
 - Bonus ApiKey 100K Request (for 1 year)
 
 > [!NOTE]
-> Product link for more information and if you want to buy [https://shop.neoxr.eu/product/TCnb](https://shop.neoxr.eu/product/TCnb)
+> Product link for more information and if you want to buy [https://shop.neoxr.eu/product/TCnb](https://shop.neoxr.eu/product/TCnb) / [Wildan Izzuin](https://wa.me/6285887776722) / [Channel](https://whatsapp.com/channel/0029Vb5ekjf4dTnMuADBHX1j)
 
 ### ⌗ REQUIREMENTS
 
