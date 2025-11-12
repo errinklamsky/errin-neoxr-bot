@@ -1,6 +1,54 @@
 import colors from 'colors'
 import chalk from 'chalk'
 import { format } from 'date-fns'
+ 
+const originalConsoleInfo = console.info
+console.info = (...args) => {
+   const message = args?.[0]
+   if (
+      message?.includes('Closing session:') ||
+      message?.includes('Opening session:')
+   ) {
+      return
+   }
+
+   originalConsoleInfo(...args)
+}
+
+const originalConsoleError = console.error
+console.error = (...args) => {
+   const firstArg = args?.[0]
+   const message = String(firstArg?.message || firstArg || '')
+
+   if (
+      message?.includes('Bad MAC') ||
+      message?.includes('Session error:')
+   ) {
+      return
+   }
+
+   if (message?.includes('Failed to decrypt')) {
+      originalConsoleError(`[BAILEYS]: ${message}`)
+      return
+   }
+
+   originalConsoleError(...args)
+}
+
+const originalConsoleWarn = console.warn
+console.warn = (...args) => {
+   const firstArg = args?.[0]
+   const message = String(firstArg?.message || firstArg || '')
+
+   if (
+      message?.includes('Closing stale') ||
+      message?.includes('Closing open session')
+   ) {
+      return
+   }
+
+   originalConsoleWarn(...args)
+}
 
 process.on('uncaughtException', err => {
    const date = format(Date.now(), 'dd/MM/yy HH:mm:ss')
@@ -22,7 +70,8 @@ process.on('unhandledRejection', (reason, promise) => {
       reason?.message?.includes('SessionError') ||
       reason?.message?.includes('ENOENT') ||
       reason?.message?.includes('Device logged out') ||
-      reason?.message?.includes('Connection Closed')
+      reason?.message?.includes('Connection Closed') ||
+      reason?.message?.includes('jidDecode')
    ) return
    const date = format(Date.now(), 'dd/MM/yy HH:mm:ss')
    console.error(chalk.black(chalk.bgRed(` Rejection `)), chalk.black(chalk.bgBlue(` ${date} `)), ':', colors.gray(reason))
