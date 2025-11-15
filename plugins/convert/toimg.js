@@ -1,7 +1,4 @@
-import { readFileSync as read, unlinkSync as remove } from 'fs'
-import path from 'path'
-import { exec } from 'child_process'
-import { tmpdir } from 'node:os'
+import sharp from 'sharp'
 
 export const run = {
    usage: ['toimg'],
@@ -12,18 +9,13 @@ export const run = {
       Utils
    }) => {
       try {
-         if (!m.quoted) return client.reply(m.chat, Utils.texted('bold', `🚩 Reply to sticker you want to convert to an image/photo (not supported for sticker animation).`), m)
-         if (m.quoted.mimetype != 'image/webp') return client.reply(m.chat, Utils.texted('bold', `🚩 Reply to sticker you want to convert to an image/photo (not supported for sticker animation).`), m)
-         let media = await client.saveMediaMessage(m.quoted)
-         let file = Utils.filename('png')
-         let isFile = path.join(tmpdir(), file)
-         exec(`ffmpeg -i ${media} ${isFile}`, (err, stderr, stdout) => {
-            remove(media)
-            if (err) return client.reply(m.chat, Utils.texted('bold', `🚩 Conversion failed.`), m)
-            const buffer = read(isFile)
-            client.sendFile(m.chat, buffer, '', '', m)
-            remove(isFile)
-         })
+         if (!/sticker/gis.test(m?.quoted?.mtype)) return client.reply(m.chat, Utils.texted('bold', `🚩 Reply to sticker or video you want to convert to an image/photo (not supported for sticker animation).`), m)
+         if (/lottie/gis.test(m?.quoted?.mtype)) return client.reply(m.chat, Utils.texted('bold', `🚩 Lottie Sticker is not supported.`), m)
+         client.sendReact(m.chat, '🕒', m.key)
+         const buffer = await sharp(await m.quoted.download())
+            .png()
+            .toBuffer()
+         client.sendFile(m.chat, buffer, '', '', m)
       } catch (e) {
          console.log(e)
          return client.reply(m.chat, Utils.jsonFormat(e), m)
