@@ -34,18 +34,16 @@ export const run = {
                const mime = (q.msg || q).mimetype || ''
                if (/video|image\/(jpe?g|png)/.test(mime)) {
                   await client.sendReact(m.chat, '🕒', m.key)
-                  const media = await m.quoted.download()
                   client.groupStatus(id, {
-                     media,
+                     message: { [q.mtype]: { ...q, caption: texts || q.text || '' } },
                      caption: texts || q.text || ''
                   }).then(async () => {
                      await client.sendReact(m.chat, '✅', m.key)
                   })
                } else if (/audio/.test(mime)) {
                   await client.sendReact(m.chat, '🕒', m.key)
-                  const media = await m.quoted.download()
                   client.groupStatus(id, {
-                     media,
+                     message: { [q.mtype]: q },
                      background: color
                   }).then(async () => {
                      await client.sendReact(m.chat, '✅', m.key)
