@@ -23,6 +23,7 @@
 - Menfess w/ Session
 - Store Plugin (Product)
 - Bot Hosting (Jadibot Auto Reconnect)
+- WhatsApp Gateway "[Wapify](https://wapify.neoxr.eu)"
 - Mistery Box
 - Scheduler Message (Reminder)
 - Scheduler Ad Message

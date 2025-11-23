@@ -7,7 +7,8 @@ console.info = (...args) => {
    const message = args?.[0]
    if (
       message?.includes('Closing session:') ||
-      message?.includes('Opening session:')
+      message?.includes('Opening session:') ||
+      message?.includes('Removing old closed session:')
    ) {
       return
    }
