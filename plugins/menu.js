@@ -317,6 +317,115 @@ export const run = {
                   media: Utils.isUrl(setting.cover) ? setting.cover : Buffer.from(setting.cover, 'base64')
                })
             }
+         } else if (style === 6) {
+            if (text) {
+               let cmd = Object.entries(plugins).filter(([_, v]) => v.run.usage && v.run.category == text.trim().toLowerCase() && !setting.hidden.includes(v.run.category.toLowerCase()))
+               let usage = Object.keys(Object.fromEntries(cmd))
+               if (usage.length == 0) return
+               let commands = []
+               cmd.map(([_, v]) => {
+                  switch (v.run.usage.constructor.name) {
+                     case 'Array':
+                        v.run.usage.map(x => commands.push({
+                           usage: x,
+                           use: v.run.use ? Utils.texted('bold', v.run.use) : ''
+                        }))
+                        break
+                     case 'String':
+                        commands.push({
+                           usage: v.run.usage,
+                           use: v.run.use ? Utils.texted('bold', v.run.use) : ''
+                        })
+                  }
+               })
+               let print = commands.sort((a, b) => a.usage.localeCompare(b.usage)).map((v, i) => {
+                  if (i == 0) {
+                     return `┌  ◦  ${isPrefix + v.usage} ${v.use}`
+                  } else if (i == commands.sort((a, b) => a.usage.localeCompare(b.usage)).length - 1) {
+                     return `└  ◦  ${isPrefix + v.usage} ${v.use}`
+                  } else {
+                     return `│  ◦  ${isPrefix + v.usage} ${v.use}`
+                  }
+               }).join('\n')
+               m.reply(Utils.Styles(print))
+            } else {
+               let print = message
+               // print += '\n' + String.fromCharCode(8206).repeat(4001) + '\n'
+               let filter = Object.entries(plugins).filter(([_, obj]) => obj.run.usage)
+               let cmd = Object.fromEntries(filter)
+               let category = []
+               for (let name in cmd) {
+                  let obj = cmd[name].run
+                  if (!cmd) continue
+                  if (!obj.category || setting.hidden.includes(obj.category)) continue
+                  if (Object.keys(category).includes(obj.category)) category[obj.category].push(obj)
+                  else {
+                     category[obj.category] = []
+                     category[obj.category].push(obj)
+                  }
+               }
+               const keys = Object.keys(category).sort()
+               let sections = []
+               const label = {
+                  highlight_label: 'Many Used'
+               }
+               keys.sort((a, b) => a.localeCompare(b)).map((v, i) => sections.push({
+                  ...(/download|conver|util/.test(v) ? label : {}),
+                  rows: [{
+                     title: Utils.ucword(v),
+                     description: `There are ${Utils.arrayJoin(Object.entries(plugins).filter(([_, x]) => x.run.usage && x.run.category == v.trim().toLowerCase() && !setting.hidden.includes(x.run.category.toLowerCase())).map(([_, x]) => x.run.usage)).length} commands`,
+                     id: `${isPrefix + command} ${v}`
+                  }]
+               }))
+               const buttons = [{
+                  name: 'cta_url',
+                  buttonParamsJson: JSON.stringify({
+                     display_text: 'Wapify - WhatsApp Gateway',
+                     url: 'https://wapify.neoxr.eu',
+                     merchant_url: 'https://wapify.neoxr.eu'
+                  })
+               }, {
+                  name: 'cta_url',
+                  buttonParamsJson: JSON.stringify({
+                     display_text: 'Neoxr API',
+                     url: 'https://api.neoxr.eu',
+                     merchant_url: 'https://api.neoxr.eu'
+                  })
+               }, {
+                  name: 'cta_url',
+                  buttonParamsJson: JSON.stringify({
+                     display_text: 'Temporary Uploader',
+                     url: 'https://s.neoxr.eu',
+                     merchant_url: 'https://s.neoxr.eu'
+                  })
+               }, {
+                  name: 'cta_url',
+                  buttonParamsJson: JSON.stringify({
+                     display_text: 'Neoxr Official Store',
+                     url: 'https://shop.neoxr.eu',
+                     merchant_url: 'https://shop.neoxr.eu'
+                  })
+               }, {
+                  name: 'single_select',
+                  buttonParamsJson: JSON.stringify({
+                     title: 'Next Page',
+                     sections
+                  })
+               }]
+               client.sendIAMessage(m.chat, buttons, m, {
+                  header: global.header,
+                  content: print,
+                  v2: true,
+                  footer: global.footer,
+                  media: Utils.isUrl(setting.cover) ? setting.cover : Buffer.from(setting.cover, 'base64'),
+                  multiple: {
+                     name: 'オートメーション',
+                     code: 'Neoxr Creative',
+                     list_title: 'Select Menu',
+                     button_title: 'Tap Here!'
+                  }
+               })
+            }
          }
       } catch (e) {
          client.reply(m.chat, Utils.jsonFormat(e), m)
