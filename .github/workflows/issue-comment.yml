@@ -32,7 +32,7 @@ jobs:
 
       - name: Send issue info to owner via WhatsApp
         run: |
-          curl -X POST "https://bot.neoxr.eu/v1/text" \
+          curl -X POST "https://wapify.neoxr.eu/v1/text" \
             --header "x-neoxr-token: ${{ secrets.WG_TOKEN }}" \
             --header "Content-Type: application/json" \
             --data-raw "{
