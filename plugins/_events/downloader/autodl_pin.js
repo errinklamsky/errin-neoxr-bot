@@ -22,14 +22,15 @@ export const run = {
                let old = new Date()
                Utils.hitstat('pin', m.sender)
                links.map(async link => {
-                  let json = await Api.neoxr('/pin', {
-                  	url: link
+                  const json = await Api.neoxr('/pin', {
+                     url: link
                   })
                   if (!json.status) return client.reply(m.chat, Utils.jsonFormat(json), m)
-                  if (/jpg|mp4/.test(json.data.type)) return client.sendFile(m.chat, json.data.url, '', `🍟 *Fetching* : ${((new Date - old) * 1)} ms`, m)
-                  if (json.data.type == 'gif') return client.sendFile(m.chat, json.data.url, '', `🍟 *Fetching* : ${((new Date - old) * 1)} ms`, m, {
-                     gif: true
-                  })
+                  if (/jpg/.test(json.data.type)) return client.sendFile(m.chat, json.data.url, '', `🍟 *Fetching* : ${((new Date - old) * 1)} ms`, m)
+                  if (/mp4|gif/.test(json.data.type)) {
+                     const buffer = await Converter.toVideo(json.data.url)
+                     client.sendFile(m.chat, buffer, '', `🍟 *Fetching* : ${((new Date - old) * 1)} ms`, m)
+                  }
                })
             }
          }
