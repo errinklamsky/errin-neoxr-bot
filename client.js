@@ -1,6 +1,6 @@
 import { Client, Config, Database, Utils } from '@neoxr/wb'
 import baileys from './lib/engine.js'
-// import './lib/proto.js'
+import './lib/proto.js'
 import './error.js'
 import './lib/config.js'
 import './lib/functions.js'
@@ -47,8 +47,8 @@ const connect = async () => {
          debug: false // Set to 'true' if you want to see how this module works :v
       }, {
          // This is the Baileys connection options section
-         version: [2, 3000, 1030825052], // To see the latest version : https://wppconnect.io/whatsapp-versions/
-         browser: ['Mac OS', 'Chrome', '139.0.7258.164'],
+         version: Config.pairing.version, // To see the latest version : https://wppconnect.io/whatsapp-versions/
+         browser: Config.pairing.browser,
          shouldIgnoreJid: jid => {
             return /(newsletter|bot)/.test(jid)
          }
