@@ -44,5 +44,5 @@ export const run = {
          return m.reply(Utils.jsonFormat(e))
       }
    },
-   operator: true
+   owner: true
 }
