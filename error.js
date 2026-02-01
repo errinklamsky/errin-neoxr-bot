@@ -1,7 +1,7 @@
 import colors from 'colors'
 import chalk from 'chalk'
 import { format } from 'date-fns'
- 
+
 const originalConsoleInfo = console.info
 console.info = (...args) => {
    const message = args?.[0]
@@ -72,7 +72,10 @@ process.on('unhandledRejection', (reason, promise) => {
       reason?.message?.includes('ENOENT') ||
       reason?.message?.includes('Device logged out') ||
       reason?.message?.includes('Connection Closed') ||
-      reason?.message?.includes('jidDecode')
+      reason?.message?.includes('jidDecode') ||
+      reason?.message?.includes('item-not-found') ||
+      reason?.message?.includes('bad-request') ||
+      reason?.message?.includes('forbidden')
    ) return
    const date = format(Date.now(), 'dd/MM/yy HH:mm:ss')
    console.error(chalk.black(chalk.bgRed(` Rejection `)), chalk.black(chalk.bgBlue(` ${date} `)), ':', colors.gray(reason))
