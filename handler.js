@@ -5,6 +5,7 @@ const cooldown = new Cooldown(Config.cooldown)
 const spam = new Spam({
    RESET_TIMER: Config.cooldown,
    HOLD_TIMER: Config.timeout,
+   HOLD_THRESHOLD: Config.hold_threshold,
    PERMANENT_THRESHOLD: Config.permanent_threshold,
    NOTIFY_THRESHOLD: Config.notify_threshold,
    BANNED_THRESHOLD: Config.banned_threshold
@@ -19,6 +20,16 @@ export default async (client, ctx) => {
          m.isGroup ? client.resolveGroupMetadata(m.chat) : Promise.resolve({}),
          client.fetchBlocklist().catch(() => [])
       ])
+
+      if (m.isGroup && groupMetadata?.participants) {
+         if (m?.sender?.endsWith('lid')) m.sender = groupMetadata.participants?.find(v => 
+            v.lid === m.sender || v.id === m.sender
+         )?.phoneNumber
+
+         if (m?.quoted?.sender?.endsWith('lid')) m.quoted.sender = groupMetadata.participants?.find(v => 
+            v.lid === m.quoted.sender || v.id === m.quoted.sender
+         )?.phoneNumber
+      }
 
       schema(m, Config)
 
@@ -105,8 +116,6 @@ export default async (client, ctx) => {
             groupSet.member[m.sender].lastseen = now
          }
       }
-      // if (setting.antispam && isSpam && /(BANNED|NOTIFY|TEMPORARY)/.test(isSpam.state)) return client.reply(m.chat, Utils.texted('bold', `🚩 ${isSpam.msg}`), m)
-      // if (setting.antispam && isSpam && /HOLD/.test(isSpam.state)) return
       if (body && !setting.self && core.prefix != setting.onlyprefix && commands.includes(core.command) && !setting.multiprefix && !Config.evaluate_chars.includes(core.command)) return client.reply(m.chat, `🚩 *Incorrect prefix!*, this bot uses prefix : *[ ${setting.onlyprefix} ]*\n\n➠ ${setting.onlyprefix + core.command} ${text || ''}`, m)
       const matcher = Utils.matcher(command, commands).filter(v => v.accuracy >= 60)
       if (prefix && !commands.includes(command) && matcher.length > 0 && !setting.self) {
@@ -144,7 +153,10 @@ export default async (client, ctx) => {
                }).then(() => chats.lastchat = new Date() * 1)
                continue
             }
-            if (!['me', 'owner', 'exec'].includes(name) && users && (users.banned || new Date - users.ban_temporary < Config.timeout)) continue
+            if (!['me', 'owner', 'exec'].includes(name) && users && (users.banned || new Date - users.ban_temporary < Config.timeout)) {
+               client.reply(m.chat, Utils.texted('bold', `⚠️ ${isSpam.msg}`), m)
+               continue
+            }
             if (m.isGroup && !['activation', 'groupinfo'].includes(name) && groupSet.mute) continue
             if (cmd.owner && !isOwner) {
                client.reply(m.chat, global.status.owner, m)
@@ -157,8 +169,8 @@ export default async (client, ctx) => {
                })
                continue
             }
-            if (setting.antispam && isSpam && /(BANNED|NOTIFY|TEMPORARY)/.test(isSpam.state)) {
-               client.reply(m.chat, Utils.texted('bold', `🚩 ${isSpam.msg}`), m)
+            if (setting.antispam && isSpam && /(BANNED|NOTIFY)/.test(isSpam.state)) {
+               client.reply(m.chat, Utils.texted('bold', `⚠️ ${isSpam.msg}`), m)
                continue
             }
             if (setting.antispam && isSpam && /HOLD/.test(isSpam.state)) continue

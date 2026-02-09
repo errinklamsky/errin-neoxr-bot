@@ -8,7 +8,6 @@ export const run = {
       Utils
    }) => {
       let user = global.db.users.find(v => v.jid == m.sender)
-      let _own = [...new Set([Config.owner, ...global.db.setting.owners])]
       const avatar = await client.profilePicture(m.sender)
       let blocked = blockList.includes(m.sender) ? true : false
       let now = new Date() * 1
@@ -21,7 +20,9 @@ export const run = {
       caption += `	◦  *Warning* : ${((m.isGroup) ? (typeof global.db.groups.find(v => v.jid == m.chat).member[m.sender] != 'undefined' ? global.db.groups.find(v => v.jid == m.chat).member[m.sender].warning : 0) + ' / 5' : user.warning + ' / 5')}\n\n`
       caption += `乂  *U S E R - S T A T U S*\n\n`
       caption += `	◦  *Blocked* : ${(blocked ? '√' : '×')}\n`
-      caption += `	◦  *Banned* : ${(new Date - user.ban_temporary < Config.timer) ? Utils.toTime(new Date(user.ban_temporary + Config.timeout) - new Date()) + ' (' + ((Config.timeout / 1000) / 60) + ' min)' : user.banned ? '√' : '×'}\n`
+      caption += `	◦  *Banned* : ${(user.ban_temporary > 0 && (Date.now() - user.ban_temporary < Config.timeout))
+         ? Utils.toTime((user.ban_temporary + Config.timeout) - Date.now()) + ' (' + (Config.timeout / 60000) + ' min)'
+         : user.banned ? '√' : '×'}\n`
       caption += `	◦  *Use In Private* : ${(global.db.chats.map(v => v.jid).includes(m.sender) ? '√' : '×')}\n`
       caption += `	◦  *Premium* : ${(user.premium ? '√' : '×')}\n`
       caption += `	◦  *Expired* : ${user.expired == 0 ? '-' : Utils.timeReverse(user.expired - new Date() * 1)}\n\n`
