@@ -22,11 +22,11 @@ export default async (client, ctx) => {
       ])
 
       if (m.isGroup && groupMetadata?.participants) {
-         if (m?.sender?.endsWith('lid')) m.sender = groupMetadata.participants?.find(v => 
+         if (m?.sender?.endsWith('lid')) m.sender = groupMetadata.participants?.find(v =>
             v.lid === m.sender || v.id === m.sender
          )?.phoneNumber
 
-         if (m?.quoted?.sender?.endsWith('lid')) m.quoted.sender = groupMetadata.participants?.find(v => 
+         if (m?.quoted?.sender?.endsWith('lid')) m.quoted.sender = groupMetadata.participants?.find(v =>
             v.lid === m.quoted.sender || v.id === m.quoted.sender
          )?.phoneNumber
       }
@@ -43,15 +43,6 @@ export default async (client, ctx) => {
       const admins = m.isGroup ? client.getAdmin(participants) : []
       const isAdmin = m.isGroup ? admins.includes(m.sender) : false
       const isBotAdmin = m.isGroup ? admins.includes((client.user.id.split`:`[0]) + '@s.whatsapp.net') : false
-
-      if (!users || typeof users.limit === undefined) return global.db.users.push({
-         jid: m.sender,
-         lid: m.sender?.endsWith('lid') ? m.sender : null,
-         banned: false,
-         limit: Config.limit,
-         hit: 0,
-         spam: 0
-      })
 
       const isSpam = spam.detection(client, m, {
          prefix, command, commands, users, cooldown,
@@ -72,12 +63,11 @@ export default async (client, ctx) => {
       }
       if (!setting.multiprefix) setting.noprefix = false
       if (setting.debug && !m.fromMe && isOwner) client.reply(m.chat, Utils.jsonFormat(m), m)
-
       if (m.isGroup) groupSet.activity = new Date() * 1
       if (users) {
          if (!users.lid) {
             const { lid } = await client.getUserId(m.sender)
-            if (lid) users.lid = lid
+            users.lid = lid ?? (m.isGroup ? m?.key?.participant : m.chat)
          }
          users.name = m.pushName
          users.lastseen = new Date() * 1
