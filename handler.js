@@ -214,6 +214,11 @@ export default async (client, ctx) => {
                thumbnail: await Utils.fetchAsBuffer('https://telegra.ph/file/0b32e0a0bb3b81fef9838.jpg'),
                url: setting.link
             }).then(() => chats.lastchat = new Date() * 1)
+            if (setting.antispam && isSpam && /(NOTIFY)/.test(isSpam.state)) {
+               client.reply(m.chat, Utils.texted('bold', `⚠️ ${isSpam.msg}`), m)
+               return
+            }
+            if (setting.antispam && isSpam && /HOLD/.test(isSpam.state)) continue
             if (event.error) continue
             if (event.owner && !isOwner) continue
             if (event.group && !m.isGroup) continue

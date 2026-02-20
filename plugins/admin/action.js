@@ -27,7 +27,7 @@ export const run = {
             // This command may lead to a high risk of your account being banned by WhatsApp.
             if (member) return client.reply(m.chat, Utils.texted('bold', `🚩 @${member.id?.replace(/@.+/, '')} already in this group.`), m)
             const [json] = await client.groupParticipantsUpdate(m.chat, [jid], command)
-            if (json.status === '200') return   m.reply(Utils.texted('bold', `✅ Successfully added @${jid?.replace(/@.+/, '')} to the group.`))
+            if (json.status === '200') return m.reply(Utils.texted('bold', `✅ Successfully added @${jid?.replace(/@.+/, '')} to the group.`))
             throw new Error('❌ Action failed')
          }
       } catch (e) {
